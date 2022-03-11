@@ -8,10 +8,10 @@ from bs4 import BeautifulSoup
 
 songlist_url = "https://www.azlyrics.com/{}/{}.html"
 lyrics_url = "https://www.azlyrics.com/lyrics/{}/{}.html"
-agent = 'Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) \
-        Gecko/20100101 Firefox/24.0'
-headers = {'User-Agent': agent}
-proxy_list = ["http://130.185.119.20:3128","http://99.71.86.199:8118"]
+# agent = 'Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) \
+#         Gecko/20100101 Firefox/24.0'
+# headers = {'User-Agent': agent}
+# proxy_list = ["http://130.185.119.20:3128","http://99.71.86.199:8118"]
 
 
 def print_list_in_sections(list, length=10):
@@ -50,14 +50,15 @@ def check_band_page(page, band_name_input):  # check that requests actually find
 
 
 def get_lyrics(page):
-    re_pattern = r"<!-- U([\w\W]*?)<\/div>"
+    # print(page.text)
+    re_pattern = "<!-- U([\w\W]*?)<\/div>"
     re_pattern2 = r"<!--.*?-->"
     re_pattern3 = r"<br>|</div>|.*?-->"
 
     lyrics = re.findall(re_pattern, page.text)
     # lyrics = re.sub(re_pattern2,'',lyrics[0])
     lyrics = re.sub(re_pattern3,'',lyrics[0])
-    lyrics = re.sub("&quot;","\"",lyrics[0])
+    lyrics = re.sub("&quot;","\"",lyrics)
 
     print(lyrics)
 
@@ -67,17 +68,17 @@ if __name__ == "__main__":
     # proxy_choice = random.randint(1,len(proxy_list)-1)
     # proxies = {"http":proxy_list[proxy_choice],"https":proxy_list[proxy_choice]}
     y=0
-    while y <= 10:
-        proxy_choice = random.randint(1,len(proxy_list)-1)
-        proxies = {"http":proxy_list[proxy_choice],"https":proxy_list[proxy_choice]}
-        print(proxies)
+    while y <= 0:
+        # proxy_choice = random.randint(1,len(proxy_list)-1)
+        # proxies = {"http":proxy_list[proxy_choice],"https":proxy_list[proxy_choice]}
+        # print(proxies)
         sleep(2)
         # band_name_input = input("Enter Band Name: ")
         band_name_input = "modest mouse"
         band_name = "modestmouse"
         # band_name = band_name_input.lower().strip().replace(" ","")
-        band_page = u_session.get(songlist_url.format(band_name[0],band_name), headers=headers,proxies=proxies)
-        print(band_page.text)
+        band_page = u_session.get(songlist_url.format(band_name[0],band_name))
+        # print(band_page.text)
 
         if check_band_page(band_page.text, band_name_input) == True:
             # print("That's a real page!")
@@ -88,12 +89,13 @@ if __name__ == "__main__":
 
             # song_index = print_list_in_sections(lyrics_list_formatted)
             song_index = 12 # random.randint(1,100)
+            # print(lyrics_url.format(band_name,lyrics_list_nonhuman[int(song_index)]))
 
-            lyrics_page = u_session.get(lyrics_url.format(band_name,lyrics_list_nonhuman[int(song_index)]), headers=headers,proxies=proxies)
-            u_session.close()
+            lyrics_page = u_session.get(lyrics_url.format(band_name,lyrics_list_nonhuman[int(song_index)]))
+            # u_session.close()
             # print(lyrics_page.text)
-            with open("lyrics_dump.txt","w") as out_file:
-                out_file.write(lyrics_page.text)
+            # with open("lyrics_dump.txt","w") as out_file:
+            #     out_file.write(lyrics_page.text)
             get_lyrics(lyrics_page)
             #do some stuff
         else:
