@@ -5,13 +5,10 @@ import string
 import random
 from time import sleep
 from bs4 import BeautifulSoup
+import pyperclip as pclip
 
 songlist_url = "https://www.azlyrics.com/{}/{}.html"
 lyrics_url = "https://www.azlyrics.com/lyrics/{}/{}.html"
-# agent = 'Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) \
-#         Gecko/20100101 Firefox/24.0'
-# headers = {'User-Agent': agent}
-# proxy_list = ["http://130.185.119.20:3128","http://99.71.86.199:8118"]
 
 
 def print_list_in_sections(list, length=10):
@@ -62,74 +59,44 @@ def get_lyrics(page):
 
     print(lyrics)
 
+    copy = input("\'C\' to copy lyrics to clipboard\n\'Enter\' to continue\nInput: ")
+    if copy.lower() != 'c':
+        print('Resetting...\n\n')
+    else:
+        pclip.copy(lyrics)
+        print("Lyrics copied to clipboard!\n\nResetting...")
+
 
 if __name__ == "__main__":
     u_session = requests.session()
-    # proxy_choice = random.randint(1,len(proxy_list)-1)
-    # proxies = {"http":proxy_list[proxy_choice],"https":proxy_list[proxy_choice]}
-    y=0
-    while y <= 0:
-        # proxy_choice = random.randint(1,len(proxy_list)-1)
-        # proxies = {"http":proxy_list[proxy_choice],"https":proxy_list[proxy_choice]}
-        # print(proxies)
+    function = 'S'
+
+    while function.lower() != 'q':
         sleep(2)
-        # band_name_input = input("Enter Band Name: ")
-        band_name_input = "modest mouse"
-        band_name = "modestmouse"
-        # band_name = band_name_input.lower().strip().replace(" ","")
-        band_page = u_session.get(songlist_url.format(band_name[0],band_name))
-        # print(band_page.text)
-
-        if check_band_page(band_page.text, band_name_input) == True:
-            # print("That's a real page!")
-            re_pattern = '(s:\".*?\")'
-            lyrics_list = re.findall(re_pattern, band_page.text)
-            lyrics_list_formatted = [x.split(":")[1].replace("\"","") for x in lyrics_list]
-            lyrics_list_nonhuman = [re.sub(r'[^\w_]', '', x).lower() for x in lyrics_list_formatted]
-
-            # song_index = print_list_in_sections(lyrics_list_formatted)
-            song_index = 12 # random.randint(1,100)
-            # print(lyrics_url.format(band_name,lyrics_list_nonhuman[int(song_index)]))
-
-            lyrics_page = u_session.get(lyrics_url.format(band_name,lyrics_list_nonhuman[int(song_index)]))
-            # u_session.close()
-            # print(lyrics_page.text)
-            # with open("lyrics_dump.txt","w") as out_file:
-            #     out_file.write(lyrics_page.text)
-            get_lyrics(lyrics_page)
-            #do some stuff
+        function = input("\'S\' to search\n\'Q\' to quit\nInput:")
+        if function.lower() == 'q':
+            break
         else:
-            print("Goodbye!")
-        y+=1
+            band_name_input = input("Enter Band Name: ")
+            band_name = band_name_input.lower().strip().replace(" ","")
+            band_page = u_session.get(songlist_url.format(band_name[0],band_name))
 
+            if check_band_page(band_page.text, band_name_input) == True:
+                # print("That's a real page!")
+                re_pattern = '(s:\".*?\")'
+                lyrics_list = re.findall(re_pattern, band_page.text)
+                lyrics_list_formatted = [x.split(":")[1].replace("\"","") for x in lyrics_list]
+                lyrics_list_nonhuman = [re.sub(r'[^\w_]', '', x).lower() for x in lyrics_list_formatted]
 
-# print(band_page)
-#
-# soup = BeautifulSoup(band_page.text, 'html.parser')
-#
-# print(soup)
-#
-# # re_pattern = f'lyrics/{band_name}/.*?.html\"'
-# re_pattern = '(s:\".*?\")'
-#
-# #soup.find('div',text=f"lyrics/{band_name}/.*?.html\"")
-#
-# lyrics_list = re.findall(re_pattern, band_page.text)
-#
-# # lyrics_list_formatted = [x.split("/")[2].replace(".html\"","") for x in lyrics_list]
-# lyrics_list_formatted = [x.split(":")[1].replace("\"","") for x in lyrics_list]
-# lyrics_list_nonhuman = [re.sub(r'[^\w_]', '', x).lower() for x in lyrics_list_formatted]
-#
-# # for x in lyrics_list:
-# #     print(x)
-#
-# song_index = print_list_in_sections(lyrics_list_formatted)
-#
-# print(song_index)
-# print(lyrics_list_nonhuman[int(song_index)])
-#
-# lyrics_page = requests.get(lyrics_url.format(band_name,lyrics_list_nonhuman[int(song_index)]))
-# print(lyrics_page.text)
+                song_index = print_list_in_sections(lyrics_list_formatted)
+                # print(lyrics_url.format(band_name,lyrics_list_nonhuman[int(song_index)]))
 
-# for x in lyrics_list_nonhuman:
-#     print(x)
+                lyrics_page = u_session.get(lyrics_url.format(band_name,lyrics_list_nonhuman[int(song_index)]))
+                # u_session.close()
+                # print(lyrics_page.text)
+                # with open("lyrics_dump.txt","w") as out_file:
+                #     out_file.write(lyrics_page.text)
+                get_lyrics(lyrics_page)
+                #do some stuff
+            else:
+                print("Goodbye!")
