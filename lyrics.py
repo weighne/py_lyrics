@@ -4,11 +4,18 @@ import re
 import string
 import random
 from time import sleep
-from bs4 import BeautifulSoup
 import pyperclip as pclip
 
 songlist_url = "https://www.azlyrics.com/{}/{}.html"
 lyrics_url = "https://www.azlyrics.com/lyrics/{}/{}.html"
+
+
+def cls():  # clear da screen
+    input('Press any key to continue...')
+    if name == 'nt':  # for windows
+        _ = system('cls')
+    else:  # for mac and linux(here, os.name is 'posix')
+        _ = system('clear')
 
 
 def print_list_in_sections(list, length=10):
@@ -72,7 +79,8 @@ if __name__ == "__main__":
     function = 'S'
 
     while function.lower() != 'q':
-        sleep(2)
+        cls()
+        sleep(2)  # to avoid the silly bot ban
         function = input("\'S\' to search\n\'Q\' to quit\nInput:")
         if function.lower() == 'q':
             break
